@@ -50,9 +50,14 @@ export class Database {
         const rowIndex = this.#database[table].findIndex(row => row.id === id)
 
         if(rowIndex > -1) {
-            const newDate = new Date()
-            this.#database[table][rowIndex] = {id,updated_at: newDate, ...data}
+            const row = this.#database[table][rowIndex]
+
+            this.#database[table][rowIndex] = {...row, ...data, updated_at: new Date()}
             this.#persist()
+
+            return true
+        } else {
+            return false
         }
     }
 
@@ -62,6 +67,27 @@ export class Database {
         if(rowIndex > -1) {
             this.#database[table].splice(rowIndex, 1)
             this.#persist()
+
+            return true
+        } else {
+            return false
+        }
+    }
+
+    complete(table, id) {
+        const rowIndex = this.#database[table].findIndex(row => row.id === id)
+
+        if(rowIndex > -1) {
+            const row = this.#database[table][rowIndex]
+
+            const completedAt = row.completed_at ? null : new Date()
+
+            this.#database[table][rowIndex] = {...row, completed_at: completedAt, updated_at: new Date()}
+            this.#persist()
+
+            return true
+        } else {
+            return false
         }
     }
 }

@@ -5,5 +5,5 @@ export function extractQueryParams(query) {
         queryParams[key] = value
 
         return queryParams
-    }, [])
+    }, {})
 }

@@ -48,7 +48,14 @@ export const routes = [
             const {id} = req.params
             const {title, description} = req.body
 
-            database.update("tasks", id, {title, description})
+            const rowExisted =  database.update("tasks", id, {
+                ...(title !== undefined && {title}),
+                ...(description !== undefined && {description})
+            })
+
+            if(!rowExisted) {
+                return res.writeHead(404).end(JSON.stringify({message: "Task não encontrada"}))
+            }
 
             return res.writeHead(204).end()
         }    
@@ -59,9 +66,28 @@ export const routes = [
         handler: (req, res) => {
             const {id} = req.params
 
-            database.delete("tasks", id) 
+            const rowExisted =  database.delete("tasks", id)
+            
+            if(!rowExisted) {
+                return res.writeHead(404).end(JSON.stringify({message: "Task não encontrada"}))
+            }
 
             return res.writeHead(204).end()
+        }
+    },
+    {
+        method: "PATCH",
+        path: buildRoutePath("/tasks/:id/complete"),
+        handler: (req, res) => {
+            const {id} = req.params
+
+            const rowExisted =  database.complete("tasks", id)
+
+            if(!rowExisted) {
+                return res.writeHead(404).end(JSON.stringify({message: "Task não encontrada"}))
+            }
+
+            return res.writeHead(200).end()
         }
     }
 ]
